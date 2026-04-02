@@ -9,7 +9,7 @@ from tools.tool import Tool
 def create_model_node(model_with_tools: RunnableBinding):
     def model_node(state: AgentState):
         model_response = model_with_tools.invoke(state["messages"])
-        state["messages"].append(AIMessage(content_blocks=model_response.content_blocks))
+        state["messages"].append(model_response)
 
         for block in model_response.content_blocks:
             print("Assistant: ", block)
@@ -30,13 +30,18 @@ def create_user_input_node():
 
 def create_tool_node(available_tools: list[Tool]):
     def tool_node(state: AgentState):
-        last_message: HumanMessage = state["messages"][-1]
-        tool_blocks = [block for block in last_message.content_blocks if block.get("type") == "tool_use"]
+        last_message: AIMessage = state["messages"][-1]
+        message_content = last_message.content if isinstance(last_message.content, list) else []
+        tool_blocks = [
+            block
+            for block in message_content
+            if isinstance(block, dict) and block.get("type") == "tool_use"
+        ]
         response_content_blocks = []
 
         for block in tool_blocks:
             name : str = block.get("name")
-            tool_input = block.get("input")
+            tool_input = block.get("input") or {}
             tool_id = block.get("id")
 
             tool: Tool = next(
@@ -60,7 +65,7 @@ def create_tool_node(available_tools: list[Tool]):
 
             response_content_blocks.append(response_block)
 
-        state["messages"].append(HumanMessage(content_blocks=response_content_blocks))
+        state["messages"].append(HumanMessage(content=response_content_blocks))
 
         return state
 
