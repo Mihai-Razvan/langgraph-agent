@@ -1,0 +1,10 @@
+langgraph
+langchain
+langchain-anthropic
+IPython
+typing_extensions
+python-dotenv
+bs4
+requests
+langchain-core
+pydantic
