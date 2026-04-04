@@ -127,7 +127,7 @@ class Agent:
 
         return None
 
-    def invoke(self, user_message: str, thread_id: str):
+    def invoke(self, user_message: str, thread_id: int):
         initial_state: AgentState = {
             "messages": [HumanMessage(content=user_message)]
         }

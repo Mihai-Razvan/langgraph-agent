@@ -7,4 +7,4 @@ agent = Agent()
 
 @app.post("/call")
 def ask_message(user_message: str):
-    return agent.invoke(user_message=user_message, thread_id="1")
+    return agent.invoke(user_message=user_message, thread_id=1)
